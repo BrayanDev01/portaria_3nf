@@ -1,34 +1,64 @@
 <script>
+import axios from 'axios';
 
 export default{
     data(){
         return{
-            employees:[
-                {
-                    "name": "VIVALDO DUTRA DO NASCIMENTO",
-                    "department": "COMPRAS",
-                    "contract": "CLT",
-                    "released": false,
-                    "createdAt": "2024-05-08T16:49:05.387Z",
-                    "updatedAt": "2024-05-08T16:49:05.387Z",
-                    "objectId": "lSaj7b1B7d"
-                },
-                {
-                    "name": "MARIANA DE SOUZA FARIAS",
-                    "department": "COMPRAS",
-                    "contract": "CLT",
-                    "released": false,
-                    "createdAt": "2024-05-08T16:49:20.163Z",
-                    "updatedAt": "2024-05-08T16:49:20.163Z",
-                    "objectId": "bGfUEHiECw"
-                }
-            ]
+            employees:[],
+            movement:[],
+            loadingEmployees: true,
+            loadingMovement: true
         }
     },
     methods:{
-        logOut(){
-            this.$router.push('/')
+        async getMyEmployees(){
+            const options = {
+                method: 'POST',
+                url: `${import.meta.env.VITE_URL_API}functions/getEmployeesByDepartmentV2`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Parse-Rest-API-Key':`${import.meta.env.VITE_XPARSE_REST_API_KEY}`,
+                    'X-Parse-Application-Id': `${import.meta.env.VITE_XPARSE_APP_ID}`
+                },
+                data:{
+                    department: 'COMPRAS'
+                }
+            };
+
+            await axios.request(options).then((response) => {
+                // console.log(response.data.result);
+                this.employees = response.data.result
+                this.loadingEmployees = false
+            }).catch((error) =>{
+                console.error(error);
+            });
+        },
+        async getEmployeesMovement(){
+            const options = {
+                method: 'POST',
+                url: `${import.meta.env.VITE_URL_API}functions/employeesMovement`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Parse-Rest-API-Key':`${import.meta.env.VITE_XPARSE_REST_API_KEY}`,
+                    'X-Parse-Application-Id': `${import.meta.env.VITE_XPARSE_APP_ID}`
+                },
+                data:{
+                    department: 'COMPRAS'
+                }
+            };
+
+            await axios.request(options).then((response) => {
+                // console.log(response.data.result);
+                this.movement = response.data.result
+                this.loadingMovement = false
+            }).catch((error) =>{
+                console.error(error);
+            });
         }
+    },
+    mounted(){
+        this.getMyEmployees();
+        this.getEmployeesMovement();
     }
 }
 
@@ -49,22 +79,42 @@ export default{
             <DataTable
                 :value="employees"
                 dataKey="id"
+                :loading="loadingEmployees"
                 tableStyle="min-width: 50rem"
             >
+                <template #header>
+                    <div style="width: 100%; text-align: center;">
+                        Lista de Colaboradores
+                    </div>
+                </template>
                 <Column field="name" header="Nome" sortable></Column>
                 <Column field="department" header="Departamento" sortable></Column>
-                <Column field="released" header="Liberado?" sortable></Column>
+                <Column field="contract" header="Contrato" sortable></Column>
+                <Column field="released" header="Liberado?" sortable>
+                    
+                </Column>
             </DataTable>
         </div>
         <div class="historySide">
             <DataTable
-                :value="employees"
+                :value="movement"
                 dataKey="id"
                 tableStyle="min-width: 50rem"
+                removableSortable
+                :loading="loadingMovement"
             >
-                <Column field="name" header="Nome" sortable></Column>
-                <Column field="department" header="Departamento" sortable></Column>
-                <Column field="released" header="Liberado?" sortable></Column>
+                <template #header>
+                    <div style="width: 100%; text-align: center;">
+                        Movimentação dos Colaboradores
+                    </div>
+                </template>
+                <Column field="colaborator.name" header="Nome" sortable></Column>
+                <Column field="createdAt" header="Data/Hora" sortable>
+                    <template #body="{data}">
+                        <div>{{ new Date(data.createdAt).toLocaleString() }}</div>
+                    </template>
+                </Column>
+                <Column field="movement" header="Movimentação" sortable></Column>
             </DataTable>
         </div>
     </div>

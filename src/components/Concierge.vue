@@ -10,7 +10,8 @@ export default{
             suggestions:[],
             filteredNames: null,
             loading: true,
-            listSearching: true
+            listSearching: true,
+            loadingEmployees: true
         }
     },
     methods:{
@@ -28,6 +29,7 @@ export default{
                 // this.listSearching = false
                 // console.log(response.data.result);
                 this.suggestions = response.data.result
+                this.loadingEmployees = false
             }).catch((error) => {
                 console.error(error);
             });
@@ -98,6 +100,7 @@ export default{
                 @complete="pesquisa($event)"
                 optionLabel="name"
                 @item-select="getEmployee($event)"
+                :disabled="loadingEmployees"
             />
         </div>
         <div class="cardEmployee" v-if="!!search.name">

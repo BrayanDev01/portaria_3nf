@@ -10,8 +10,8 @@ export default{
 }
 </script>
 <template>
-    <Concierge></Concierge>
-    <!-- <Dashboard></Dashboard> -->
+    <!-- <Concierge></Concierge> -->
+    <Dashboard></Dashboard>
 </template>
 
 <style>
