@@ -21,6 +21,8 @@ import Row from 'primevue/row';
 import Dialog from 'primevue/dialog';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import ConfirmDialog from 'primevue/confirmdialog';
+import ConfirmationService from 'primevue/confirmationservice';
 
 const app = createApp(App);
 
@@ -38,6 +40,8 @@ app.component('ColumnGroup', ColumnGroup);
 app.component('Row', Row);
 app.component('Dialog', Dialog);
 app.component('Toast', Toast);
+app.component('ConfirmDialog', ConfirmDialog)
+app.use(ConfirmationService);
 app.use(ToastService);
 app.use(router);
 app.use(PrimeVue);
