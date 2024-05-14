@@ -150,7 +150,6 @@ export default{
                 </template>
                 <Column field="name" header="Nome" sortable></Column>
                 <Column field="department" header="Departamento" sortable></Column>
-                <Column field="contract" header="Contrato" sortable></Column>
                 <Column field="released" header="Liberado?" sortable>
                     <template #body="{data}">
                         <Button 
