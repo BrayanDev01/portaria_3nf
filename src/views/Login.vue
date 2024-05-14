@@ -29,7 +29,7 @@ export default{
             };
 
             await axios.request(options).then((response) => {
-                console.log(response)
+                // console.log(response)
                 localStorage.setItem("loggedUser", JSON.stringify(response.data));
                 this.$router.push({ path: '/home'});
                 
@@ -143,5 +143,14 @@ export default{
   100% {
     background-position: 0% 50%;
   }
+}
+
+@media(max-width:500px){
+    .card{
+        width: 90%;
+    }
+    .inputsGroup{
+        width: 80%;
+    }
 }
 </style>

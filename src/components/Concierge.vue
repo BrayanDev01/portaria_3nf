@@ -37,7 +37,7 @@ export default{
             });
         },
         async getEmployee(employee){
-            console.log(employee.value.objectId)
+            // console.log(employee.value.objectId)
             const options ={
                 method: 'GET',
                 url: `${import.meta.env.VITE_URL_API}classes/employees/${employee.value.objectId}`,
@@ -48,7 +48,7 @@ export default{
             }
 
             await axios.request(options).then((response)=>{
-                console.log(response)
+                // console.log(response)
                 this.search = response.data
                 this.loading = false
             }).catch(error =>{
@@ -174,7 +174,7 @@ export default{
                         </div>
                     </div>
                 </div>
-                <div style="width: 100%; display: flex; justify-content: center; padding: 20px; gap: 30px;">
+                <div class="buttonOrganizer">
                     <Button severity="help" @click="search = null">Cancelar</Button>
                     <Button severity="warning" @click="registerMovement(this.search, 'Entrada')">Registrar Entrada</Button>
                     <Button severity="info" @click="registerMovement(this.search, 'Saída')">Registrar Saída</Button>
@@ -216,8 +216,8 @@ export default{
     margin: 10px;
 }
 .cardEmployee{
-    width: 50%;
-    height: 500px;
+    width: 70%;
+    height: 700px;
     margin: 40px 0px;
     background-color: var(--gray-background);
     display: flex;
@@ -239,6 +239,26 @@ export default{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.buttonOrganizer{
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    padding: 20px; 
+    gap: 30px;
+}
+
+@media(max-width:500px){
+    .cardEmployee{
+        width: 100%;
+    }
+    .imageSide{
+        display: none;
+    }
+    .buttonOrganizer{
+        gap:5px;
+    }
 }
 
 </style>

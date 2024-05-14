@@ -139,6 +139,7 @@ export default{
         <div class="workersSide">
             <DataTable
                 :value="employees"
+                tableStyle="min-width: 50rem"
                 dataKey="id"
                 :loading="loadingEmployees"
             >
@@ -167,7 +168,6 @@ export default{
                 :value="movement"
                 dataKey="id"
                 tableStyle="min-width: 50rem"
-                :breakpoints="{ '1199px': '75vw', '575px': '20vw' }"
                 removableSortable
                 :loading="loadingMovement"
             >
@@ -213,8 +213,8 @@ export default{
     width: 100%;
     height: 70%;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: flex-start;
     gap: 30px;
 }
 .emptyInfo{
@@ -225,6 +225,7 @@ export default{
 @media (max-width: 1025px){
     .content{
         flex-direction: column;
+        align-items: center;
     }
     .workersSide, .historySide{
         max-width: 90dvw;
