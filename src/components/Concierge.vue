@@ -1,10 +1,14 @@
 <script>
 import axios from 'axios';
+import MenuBar from '../components/MenuBar.vue'
 
 export default{
+    components:{
+        MenuBar
+    },
     data(){
         return{
-            search:'',
+            search: null,
             checked: false,
             granted: true,
             suggestions:[],
@@ -26,8 +30,6 @@ export default{
             };  
 
             axios.request(options).then((response) =>{
-                // this.listSearching = false
-                // console.log(response.data.result);
                 this.suggestions = response.data.result
                 this.loadingEmployees = false
             }).catch((error) => {
@@ -54,7 +56,6 @@ export default{
             })
         },
         pesquisa(event){
-            // console.log(event.query)
             
             if (!event.query.trim().length) {
                 this.filteredNames = [...this.suggestions];
@@ -66,6 +67,32 @@ export default{
         },
         logOut(){
             this.$router.push("/")
+        },
+        async registerMovement(data, typeMovement){
+            const options = {
+                method: 'POST',
+                url: `${import.meta.env.VITE_URL_API}classes/concierge`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Parse-Rest-API-Key':`${import.meta.env.VITE_XPARSE_REST_API_KEY}`,
+                    'X-Parse-Application-Id': `${import.meta.env.VITE_XPARSE_APP_ID}`
+                },
+                data:{
+                    colaborator: {"__type": "Pointer", "className": "employees", "objectId": data.objectId},
+                    movement: typeMovement,
+                    department: data.department
+                }
+            };
+
+            await axios.request(options).then((response) => {
+                // console.log(response)
+                this.search = null
+                this.$toast.add({ severity: 'success', summary: 'Movimentação Registrada', life: 3000 });
+
+            }).catch((error) =>{
+                console.error(error);
+                this.$toast.add({ severity: 'error', summary: 'Algo deu errado', detail:'Tente novamente', life: 3000 });
+            });
         }
     },
     mounted(){
@@ -83,16 +110,9 @@ export default{
 
 <template>
 <div class="main">
-    <div class="topSearch">
-        <div>
-            <img src="../assets/images/grupo_3_nf_white.png" alt="Logo 3NF" width="200px">
-        </div>
-        <div style="color:white">
-            <span @click="logOut()" style="cursor: pointer;">SAIR</span>
-        </div>
-    </div>
+    <MenuBar></MenuBar>
     <div class="content">
-        <div class="inputGroup" style="color:white">
+        <div class="inputGroup" style="color: white">
             <span>Digite o nome do colaborador:</span>
             <AutoComplete 
                 v-model="search" 
@@ -103,22 +123,22 @@ export default{
                 :disabled="loadingEmployees"
             />
         </div>
-        <div class="cardEmployee" v-if="!!search.name">
+        <div class="cardEmployee" v-if="!!search?.name">
             <div class="organizer plus" v-if="!loading">
                 <div class="organizer">
-                    <div class="imageSide">
+                    <div class="imageSide color">
                         image                
                     </div>
                     <div class="formSide">
-                        <div class="inputGroup">
+                        <div class="inputGroup color">
                             <span>Nome do colaborador :</span>
                             <InputText type="text" v-model="search.name" disabled />
                         </div>
-                        <div class="inputGroup">
+                        <div class="inputGroup color">
                             <span>Setor :</span>
                             <InputText type="text" v-model="search.department" disabled />
                         </div>
-                        <div class="inputGroup" style="text-align: center;" v-if="search.contract === 'CLT'">
+                        <div class="inputGroup color" style="text-align: center;" v-if="search.contract === 'CLT'">
                             <span>Liberado?</span>
                             <ToggleButton 
                                 v-model="search.released" 
@@ -135,7 +155,7 @@ export default{
                                 }" 
                             />
                         </div>
-                        <div class="inputGroup" style="text-align: center;" v-else>
+                        <div class="inputGroup color" style="text-align: center;" v-else>
                             <span>Liberado?</span>
                             <ToggleButton 
                                 v-model="granted" 
@@ -155,9 +175,9 @@ export default{
                     </div>
                 </div>
                 <div style="width: 100%; display: flex; justify-content: center; padding: 20px; gap: 30px;">
-                    <Button severity="help">Cancelar</Button>
-                    <Button severity="warning">Registrar Entrada</Button>
-                    <Button severity="info">Registrar Saída</Button>
+                    <Button severity="help" @click="search = null">Cancelar</Button>
+                    <Button severity="warning" @click="registerMovement(this.search, 'Entrada')">Registrar Entrada</Button>
+                    <Button severity="info" @click="registerMovement(this.search, 'Saída')">Registrar Saída</Button>
                 </div>
             </div>
             <div class="organizer" style="justify-content: center; align-items: center;" v-else>
@@ -165,6 +185,7 @@ export default{
             </div> 
         </div>
     </div>
+    <Toast></Toast>
 </div>
 </template>
 
@@ -208,6 +229,9 @@ export default{
 }
 .plus{
     flex-direction: column;
+}
+.color{
+    color: black;
 }
 .imageSide, .formSide{
     width: 100%;

@@ -1,13 +1,19 @@
 <script>
 import axios from 'axios';
+import MenuBar from '../components/MenuBar.vue'
 
 export default{
+    components:{
+        MenuBar
+    },
     data(){
         return{
             employees:[],
             movement:[],
             loadingEmployees: true,
-            loadingMovement: true
+            loadingMovement: true,
+            loadingButtons: false,
+            userInfo: null
         }
     },
     methods:{
@@ -21,7 +27,7 @@ export default{
                     'X-Parse-Application-Id': `${import.meta.env.VITE_XPARSE_APP_ID}`
                 },
                 data:{
-                    department: 'COMPRAS'
+                    department: this.userInfo.department
                 }
             };
 
@@ -43,7 +49,7 @@ export default{
                     'X-Parse-Application-Id': `${import.meta.env.VITE_XPARSE_APP_ID}`
                 },
                 data:{
-                    department: 'COMPRAS'
+                    department: this.userInfo.department
                 }
             };
 
@@ -54,11 +60,73 @@ export default{
             }).catch((error) =>{
                 console.error(error);
             });
+        },
+        async releasedOutput(data){
+            this.loadingButtons = true
+
+
+            const options = {
+                method: 'PUT',
+                url: `${import.meta.env.VITE_URL_API}classes/employees/${data.objectId}`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Parse-Rest-API-Key':`${import.meta.env.VITE_XPARSE_REST_API_KEY}`,
+                    'X-Parse-Application-Id': `${import.meta.env.VITE_XPARSE_APP_ID}`
+                },
+                data:{
+                    released: !data.released
+                }
+            };
+
+            await axios.request(options).then((response) => {
+                this.$toast.add({ severity: 'success', summary: 'Alteração Concluída', life: 3000 });
+                this.getMyEmployees()
+                this.loadingButtons = false
+            }).catch((error) =>{
+                console.error(error);
+                this.loadingButtons = false
+                this.$toast.add({ severity: 'danger', summary: 'Algo deu errado', detail: 'Tente recarregar a página', life: 3000 });
+            });            
+        },
+        areUSure(data){
+
+            if(data.released === false){
+                this.$confirm.require({
+                    message:`Deseja liberar a saída de ${data.name}?`,  
+                    header: 'Confirmação',
+                    icon: 'pi pi-exclamation-triangle',
+                    rejectLabel: 'Cancelar',
+                    acceptLabel: 'Liberar',
+                    accept: () => {
+                        this.releasedOutput(data)
+                    },
+                    reject: () => {
+                        
+                    }
+                })
+            }else{
+                this.$confirm.require({
+                    message:`Deseja cancelar a saída de ${data.name}?`,  
+                    header: 'Confirmação',
+                    icon: 'pi pi-exclamation-triangle',
+                    rejectLabel: 'Cancelar',
+                    acceptLabel: 'Bloquear',
+                    acceptClass: 'p-button-danger',
+                    accept: () => {
+                        this.releasedOutput(data)
+                    },
+                    reject: () => {
+                        
+                    }
+                })
+            }
         }
     },
     mounted(){
+        this.userInfo = JSON.parse(localStorage.getItem("loggedUser"))
         this.getMyEmployees();
         this.getEmployeesMovement();
+        
     }
 }
 
@@ -66,21 +134,13 @@ export default{
 
 <template>
 <div class="main">
-    <div class="topSearch">
-        <div>
-            <img src="../assets/images/grupo_3_nf_white.png" alt="Logo 3NF" width="200px">
-        </div>
-        <div style="color:white">
-            <span @click="logOut()" style="cursor: pointer">SAIR</span>
-        </div>
-    </div>
+    <MenuBar></MenuBar>
     <div class="content">
         <div class="workersSide">
             <DataTable
                 :value="employees"
                 dataKey="id"
                 :loading="loadingEmployees"
-                tableStyle="min-width: 50rem"
             >
                 <template #header>
                     <div style="width: 100%; text-align: center;">
@@ -91,7 +151,14 @@ export default{
                 <Column field="department" header="Departamento" sortable></Column>
                 <Column field="contract" header="Contrato" sortable></Column>
                 <Column field="released" header="Liberado?" sortable>
-                    
+                    <template #body="{data}">
+                        <Button 
+                            :icon="data.released === false ? 'pi pi-lock':'pi pi-lock-open'" 
+                            rounded
+                            :loading="loadingButtons"
+                            @click="areUSure(data)"
+                        ></Button>
+                    </template>                    
                 </Column>
             </DataTable>
         </div>
@@ -100,12 +167,18 @@ export default{
                 :value="movement"
                 dataKey="id"
                 tableStyle="min-width: 50rem"
+                :breakpoints="{ '1199px': '75vw', '575px': '20vw' }"
                 removableSortable
                 :loading="loadingMovement"
             >
                 <template #header>
                     <div style="width: 100%; text-align: center;">
                         Movimentação dos Colaboradores
+                    </div>
+                </template>
+                <template #empty>
+                    <div class="emptyInfo">
+                        Não há movimentações no dia de hoje...
                     </div>
                 </template>
                 <Column field="colaborator.name" header="Nome" sortable></Column>
@@ -118,6 +191,8 @@ export default{
             </DataTable>
         </div>
     </div>
+    <Toast></Toast>
+    <ConfirmDialog></ConfirmDialog>
 </div>
 </template>
 
@@ -141,5 +216,18 @@ export default{
     align-items: center;
     justify-content: center;
     gap: 30px;
+}
+.emptyInfo{
+    width: 100%;
+    text-align: center;
+}
+
+@media (max-width: 1025px){
+    .content{
+        flex-direction: column;
+    }
+    .workersSide, .historySide{
+        max-width: 90dvw;
+    }
 }
 </style>

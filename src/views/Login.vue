@@ -1,14 +1,45 @@
 <script>
+import axios from 'axios'
+
 export default{
     data(){
         return{
             username:"",
-            passowrd:""
+            password:"",
+            position: 'center',
+            visible: false
         }
     },
     methods:{
-        gotoHome(){
-            this.$router.push('/home')
+        async login(){
+            this.visible = true
+
+            const options = {
+                method: 'POST',
+                url: `${import.meta.env.VITE_URL_API}login`,
+                headers: {
+                    'X-Parse-Application-Id': `${import.meta.env.VITE_XPARSE_APP_ID}`,
+                    'X-Parse-REST-API-Key': `${import.meta.env.VITE_XPARSE_REST_API_KEY}`,
+                    'X-Parse-Revocable-Session': '1'
+                },
+                data:{
+                    username: this.username,
+                    password: this.password
+                }
+            };
+
+            await axios.request(options).then((response) => {
+                console.log(response)
+                localStorage.setItem("loggedUser", JSON.stringify(response.data));
+                this.$router.push({ path: '/home'});
+                
+                return response.data
+
+            }).catch((error) => {
+                console.log(error)
+                return this.loading = false        
+            });
+            // this.loading = false
         }
     }
 }
@@ -35,6 +66,7 @@ export default{
                         toggleMask 
                         :feedback="false"
                         style="width: 100%;"
+                        @keyup.enter="login()"
                         :pt="{
                             input:{
                                 root:{
@@ -47,9 +79,26 @@ export default{
                 </FloatLabel>
             </div>
             
-            <Button style="width: 100%;" :pt="{root:{style: 'padding:10px 50px; justify-content: center'}}"@click="gotoHome()">Entrar</Button>
+            <Button 
+                style="width: 100%;" 
+                :pt="{root:{style: 'padding:10px 50px; justify-content: center'}}" 
+                @click="login()"
+                @keyup.enter="login()"
+            >
+                Entrar
+            </Button>
         </div>
     </div>
+    <Dialog 
+        v-model:visible="visible" 
+        :position="position" 
+        :modal="true" 
+        :draggable="false"
+    >
+        <template #container>
+            <ProgressSpinner /> 
+        </template>
+    </Dialog>
 </div>
 </template>
 
