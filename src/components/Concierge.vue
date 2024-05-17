@@ -65,10 +65,11 @@ export default{
                 });
             }
         },
-        logOut(){
-            this.$router.push("/")
-        },
         async registerMovement(data, typeMovement){
+            if(typeMovement === 'Saída' && data.released === false){
+                typeMovement = 'Saída sem autorização'
+            }else{};
+
             const options = {
                 method: 'POST',
                 url: `${import.meta.env.VITE_URL_API}classes/concierge`,
