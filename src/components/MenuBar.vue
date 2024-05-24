@@ -43,7 +43,7 @@ export default{
 <template>
     <div class="topSearch">
         <div>
-            <img src="../assets/images/grupo_3_nf_white.png" alt="Logo 3NF" width="200px">
+            <img src="../assets/images/grupo_3_nf_white.png" alt="Logo 3NF" width="200px" class="imgSize">
         </div>
         <div style="color:white">
             <span @click="logOut()" style="cursor: pointer">SAIR</span>
@@ -68,5 +68,10 @@ export default{
     align-items: center;
     padding: 30px;
     justify-content: space-between
+}
+@media(max-width:500px){
+    .imgSize{
+        width: 150px;
+    }
 }
 </style>

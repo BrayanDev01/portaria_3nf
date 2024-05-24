@@ -273,6 +273,7 @@ export default{
                 scrollable 
                 scrollHeight="500px"
                 removableSort
+                :breakpoints="{'475px': '90dvw' }"
             >
                 <template #header>
                     <div class="organizerHead">
@@ -329,7 +330,7 @@ export default{
             <div class="rigthSide">
                 <strong>Funcionarios</strong>
                 <div style="display: flex; gap: 10px; margin: 10px;">
-                    <FloatLabel>
+                    <FloatLabel :pt="{root:{style:{'align-content': 'center'}}}">
                         <InputText id="username" v-model="nameWorker" maxlength="42"/>
                         <label for="username">Nome</label>
                     </FloatLabel>
@@ -394,6 +395,7 @@ export default{
     display: flex; 
     justify-content: space-between; 
     align-items: center;
+    gap: 10px;
 }
 .formOrganizer{
     display: flex;
@@ -428,6 +430,16 @@ export default{
     }
     .organizerHead{
         flex-direction: column;
+    }
+    .formOrganizer{
+        flex-direction: column;
+        align-items: center;
+    }
+    .rigthSide, .leftSide{
+        width: 90%;
+    }
+    .limitChips{
+        max-height: 95dvh;
     }
 }
 </style>
