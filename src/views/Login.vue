@@ -37,9 +37,9 @@ export default{
 
             }).catch((error) => {
                 console.log(error)
-                return this.loading = false        
+                this.$toast.add({severity: 'error', summary: 'Tivemos um problema', detail:'Vamos tentar novamente', life: 2000})
+                this.visible = false        
             });
-            // this.loading = false
         }
     }
 }
@@ -99,6 +99,7 @@ export default{
             <ProgressSpinner /> 
         </template>
     </Dialog>
+    <Toast></Toast>
 </div>
 </template>
 

@@ -23,6 +23,13 @@ import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import ConfirmDialog from 'primevue/confirmdialog';
 import ConfirmationService from 'primevue/confirmationservice';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputMask from 'primevue/inputmask';
+import Tag from 'primevue/tag';
+import Chip from 'primevue/chip';
+
+
 
 const app = createApp(App);
 
@@ -40,7 +47,12 @@ app.component('ColumnGroup', ColumnGroup);
 app.component('Row', Row);
 app.component('Dialog', Dialog);
 app.component('Toast', Toast);
-app.component('ConfirmDialog', ConfirmDialog)
+app.component('ConfirmDialog', ConfirmDialog);
+app.component('IconField', IconField);
+app.component('InputIcon', InputIcon);
+app.component('InputMask', InputMask);
+app.component('Tag', Tag)
+app.component('Chip', Chip)
 app.use(ConfirmationService);
 app.use(ToastService);
 app.use(router);

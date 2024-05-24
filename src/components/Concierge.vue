@@ -15,7 +15,8 @@ export default{
             filteredNames: null,
             loading: true,
             listSearching: true,
-            loadingEmployees: true
+            loadingEmployees: true,
+            outsourced:'TERCEIRIZADO'
         }
     },
     methods:{
@@ -66,9 +67,14 @@ export default{
             }
         },
         async registerMovement(data, typeMovement){
+
             if(typeMovement === 'Saída' && data.released === false){
                 typeMovement = 'Saída sem autorização'
             }else{};
+
+            if(data.isAdm){
+                typeMovement = 'Saída'
+            }
 
             const options = {
                 method: 'POST',
@@ -137,9 +143,10 @@ export default{
                         </div>
                         <div class="inputGroup color">
                             <span>Setor :</span>
-                            <InputText type="text" v-model="search.department" disabled />
+                            <InputText type="text" v-model="search.department" disabled v-if="!search.outsourced"/>
+                            <InputText type="text" v-model="outsourced" disabled v-else/>
                         </div>
-                        <div class="inputGroup color" style="text-align: center;" v-if="search.contract === 'CLT'">
+                        <div class="inputGroup color" style="text-align: center;" v-if="!search.isAdm">
                             <span>Liberado?</span>
                             <ToggleButton 
                                 v-model="search.released" 
