@@ -154,4 +154,12 @@ export default{
         width: 80%;
     }
 }
+@media (max-width:900px){
+    .card{
+        width: 90%;
+    }
+    .inputsGroup{
+        width: 80%;
+    }        
+}
 </style>
